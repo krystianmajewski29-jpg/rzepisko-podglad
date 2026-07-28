@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Obudowa pilota z krzyżakiem — czytelna nawet w rozmiarze 48 dp. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M42,26h24a6,6 0,0 1,6 6v44a6,6 0,0 1,-6 6h-24a6,6 0,0 1,-6 -6v-44a6,6 0,0 1,6 -6zM42,32v10h24v-10z" />
+    <path
+        android:fillColor="#8AB4FF"
+        android:pathData="M54,50m-4,0a4,4 0,1 0,8 0a4,4 0,1 0,-8 0" />
+    <path
+        android:fillColor="#8AB4FF"
+        android:pathData="M54,58m-3,0a3,3 0,1 0,6 0a3,3 0,1 0,-6 0M54,68m-3,0a3,3 0,1 0,6 0a3,3 0,1 0,-6 0M44,58m-3,0a3,3 0,1 0,6 0a3,3 0,1 0,-6 0M64,58m-3,0a3,3 0,1 0,6 0a3,3 0,1 0,-6 0" />
+</vector>

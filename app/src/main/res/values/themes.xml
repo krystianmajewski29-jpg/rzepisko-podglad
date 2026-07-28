@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Motyw systemowy tylko po to, by usunąć pasek akcji — kolory ustala Compose
+         w PilotTheme, łącznie z Material You na Androidzie 12+. -->
+    <style name="Theme.Pilot" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
