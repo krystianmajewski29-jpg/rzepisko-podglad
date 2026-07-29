@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Od Androida 9 (API 28) ruch bez szyfrowania jest domyślnie blokowany. Bez tego pliku
+  cały tryb Wi-Fi przestaje działać na Androidzie 9+ z błędem
+  „CLEARTEXT communication not permitted”: Roku (8060), Sony (80), Philips (1925)
+  i LG (ws:// 3000) nie mają wariantu po TLS-ie — takie są protokoły producentów,
+  nie nasz wybór.
+
+  Konfiguracja sieciowa nie potrafi ograniczyć zezwolenia do zakresu adresów
+  (element <domain> przyjmuje nazwę hosta albo pojedynczy adres, nie podsieć),
+  więc cleartext jest włączony globalnie. Realnym ogranicznikiem jest kod:
+  LocalNetwork.requirePrivate() odrzuca każdy adres spoza RFC 1918 zanim powstanie
+  jakiekolwiek żądanie, a testy LocalNetworkTest pilnują tej reguły.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

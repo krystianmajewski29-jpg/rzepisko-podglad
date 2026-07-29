@@ -51,6 +51,20 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
+
+    lint {
+        // Zgodność wsteczna jest wymogiem, nie sugestią: wywołanie API nowszego niż
+        // minSdk 24 bez sprawdzenia wersji ma wywalić build, a nie wylądować
+        // w ostrzeżeniach, których nikt nie czyta.
+        //
+        // Świadomie bez InlinedApi: ta reguła zgłasza też stałe String w rodzaju
+        // Manifest.permission.BLUETOOTH_CONNECT (API 31), których odczytanie na
+        // starszym systemie jest nieszkodliwe — kompilator wstawia zwykły napis.
+        fatal += listOf("NewApi")
+        abortOnError = true
+        checkReleaseBuilds = true
+        warningsAsErrors = false
+    }
 }
 
 dependencies {

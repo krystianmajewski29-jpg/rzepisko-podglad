@@ -28,6 +28,67 @@ Czego **nie** obsługuje:
 - Nadajnik podczerwieni — aplikacja celowo nie używa `ConsumerIrManager`; wyłącznie
   sieć i Bluetooth.
 
+## Zgodność z wersjami Androida
+
+`minSdk 24` (Android 7.0) — `targetSdk 35` (Android 15). Aplikacja instaluje się na
+całym tym zakresie; różni się tylko dostępność trybu Bluetooth.
+
+| Android | API | Wi-Fi | Bluetooth | Uwagi |
+|---|---|:---:|:---:|---|
+| 7.0 – 8.1 | 24–27 | ✅ | ❌ | `BluetoothHidDevice` nie istnieje; przełącznik trybu jest wyłączony z wyjaśnieniem |
+| 9 – 11 | 28–30 | ✅ | ✅ | `BLUETOOTH`/`BLUETOOTH_ADMIN` nadawane przy instalacji |
+| 12 – 15 | 31–35 | ✅ | ✅ | zgoda `BLUETOOTH_CONNECT` w trakcie działania; Material You; edge-to-edge |
+
+Miejsca zależne od wersji i sposób ich zabezpieczenia:
+
+| API | Co | Zabezpieczenie |
+|---|---|---|
+| 26 | `VibrationEffect.createOneShot` | `SDK_INT >= O`, niżej przestarzałe `vibrate(long)` |
+| 28 | `BluetoothHidDevice` (cały tryb BT) | `@RequiresApi(P)` + `isBluetoothHidSupported()` |
+| 31 | `VibratorManager` | `SDK_INT >= S`, niżej `VIBRATOR_SERVICE` |
+| 31 | dynamiczna paleta Material You | `SDK_INT >= S`, niżej paleta własna |
+| 31 | zgoda `BLUETOOTH_CONNECT` | `SDK_INT >= S`; starsze mają `maxSdkVersion="30"` |
+
+`isBluetoothHidSupported()` leży poza `BluetoothHidController` (klasa jest oznaczona
+`@RequiresApi(P)`, więc lint uznałby wywołanie jej companiona za użycie API 28) i nosi
+adnotację `@ChecksSdkIntAtLeast` — dzięki temu warunek `if (isBluetoothHidSupported())`
+jest dla lintu równoważny jawnemu sprawdzeniu `SDK_INT`.
+
+Kontrolę wymusza build: `lint { fatal += listOf("NewApi") }` przerywa kompilację przy
+każdym użyciu API nowszego niż `minSdk` bez sprawdzenia wersji:
+
+```bash
+./gradlew lintDebug
+```
+
+W repozytorium leży gotowy workflow CI uruchamiający lint, testy i budowę APK przy
+każdym pushu — `ci/android-workflow.yml`. Żeby go włączyć, trzeba go przenieść:
+
+```bash
+mkdir -p .github/workflows
+git mv ci/android-workflow.yml .github/workflows/android.yml
+```
+
+Nie leży od razu na miejscu, bo dodanie pliku do `.github/workflows/` wymaga uprawnienia
+`workflow`, którego nie miał token użyty przy tworzeniu projektu.
+
+### Ruch nieszyfrowany
+
+Protokoły Roku (8060), Sony (80), Philips (1925) i LG (`ws://` 3000) nie mają wariantu
+po TLS-ie, a od Androida 9 taki ruch jest domyślnie blokowany. Aplikacja dołącza więc
+`res/xml/network_security_config.xml` z `cleartextTrafficPermitted="true"`. Konfiguracja
+sieciowa nie potrafi zawęzić zezwolenia do podsieci — element `<domain>` przyjmuje nazwę
+hosta albo pojedynczy adres — dlatego faktycznym ogranicznikiem pozostaje
+`LocalNetwork.requirePrivate()`, odrzucający każdy adres spoza RFC 1918 zanim powstanie
+jakiekolwiek żądanie.
+
+### Ikona uruchamiania
+
+Android 8.0+ (API 26) bierze ikonę adaptacyjną z `mipmap-anydpi-v26/`. Android 7.x
+(API 24–25) tego katalogu nie widzi, więc `mipmap/ic_launcher.xml` zawiera wariant
+zapasowy z wrysowanym tłem. Bez niego `@mipmap/ic_launcher` nie rozwiązałby się
+na API 24–25.
+
 ## Budowanie
 
 Wymagany Android SDK (compileSdk 35) i JDK 17+.

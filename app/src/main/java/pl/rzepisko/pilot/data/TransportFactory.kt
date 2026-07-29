@@ -1,8 +1,8 @@
 package pl.rzepisko.pilot.data
 
 import android.content.Context
-import android.os.Build
 import pl.rzepisko.pilot.bluetooth.BluetoothHidTransport
+import pl.rzepisko.pilot.bluetooth.isBluetoothHidSupported
 import pl.rzepisko.pilot.core.Protocol
 import pl.rzepisko.pilot.core.RemoteDevice
 import pl.rzepisko.pilot.core.RemoteException
@@ -22,11 +22,14 @@ class TransportFactory(private val context: Context) {
         Protocol.SONY_BRAVIA -> SonyBraviaTransport(device)
         Protocol.ROKU_ECP -> RokuEcpTransport(device)
         Protocol.PHILIPS_JOINTSPACE -> PhilipsJointSpaceTransport(device)
-        Protocol.BLUETOOTH_HID -> {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                throw RemoteException("Tryb Bluetooth wymaga Androida 9 lub nowszego")
+        Protocol.BLUETOOTH_HID ->
+            if (isBluetoothHidSupported()) {
+                BluetoothHidTransport(device, context.applicationContext)
+            } else {
+                throw RemoteException(
+                    "Tryb Bluetooth wymaga Androida 9 lub nowszego. Na tym telefonie " +
+                        "steruj telewizorem przez Wi-Fi.",
+                )
             }
-            BluetoothHidTransport(device, context.applicationContext)
-        }
     }
 }

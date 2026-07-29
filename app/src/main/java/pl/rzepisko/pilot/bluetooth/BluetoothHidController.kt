@@ -11,6 +11,7 @@ import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import java.util.concurrent.Executor
@@ -239,8 +240,17 @@ class BluetoothHidController private constructor(private val appContext: Context
             instance ?: synchronized(this) {
                 instance ?: BluetoothHidController(context.applicationContext).also { instance = it }
             }
-
-        /** Czy w ogóle da się użyć trybu Bluetooth na tym telefonie. */
-        fun isSupported(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
     }
 }
+
+/**
+ * Czy telefon w ogóle potrafi udawać urządzenie HID.
+ *
+ * Celowo poza [BluetoothHidController]: ta klasa jest oznaczona `@RequiresApi(P)`,
+ * więc lint uznałby każde odwołanie do jej companiona — łącznie z samym sprawdzeniem
+ * wersji — za użycie API 28. Adnotacja [ChecksSdkIntAtLeast] mówi lintowi, że wynik
+ * tej funkcji jest równoważny warunkowi `SDK_INT >= P`, dzięki czemu
+ * `if (isBluetoothHidSupported()) { ... }` wystarcza za jawne sprawdzenie wersji.
+ */
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.P)
+fun isBluetoothHidSupported(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P

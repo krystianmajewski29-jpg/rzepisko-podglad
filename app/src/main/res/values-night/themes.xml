@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Wariant nocny istnieje tylko po to, by tło okna nie mignęło na biało zanim
+         Compose zdąży narysować pierwszą klatkę w ciemnym motywie. -->
+    <style name="Theme.Pilot" parent="android:Theme.Material.NoActionBar" />
+</resources>
